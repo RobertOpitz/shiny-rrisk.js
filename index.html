@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Network</title>
+    <script
+      type = "text/javascript"
+      src  = "https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    ></script>
+    <!-- Load plotly.js using CDN -->
+    <script 
+      src = "https://cdn.plot.ly/plotly-2.16.1.min.js"
+    ></script>
+    <style type="text/css">
+      #mynetwork {
+        width: 600px;
+        height: 400px;
+        border: 1px solid lightgray;
+      }
+
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #ebebeb;
+      }
+    </style>
+  </head>
+  <body>
+
+    <script src = "js/app.js", type = "module"></script>
+
+    <div id = "mynetwork"></div>
+
+    <label for = "input_node_name">node name</label><br>
+    <input id = "input_node_name" type = "text" name = "input_node_name"><br>
+
+    <label for = "input_eq">user defined expression</label><br>
+    <input id = "input_eq" type = "text" name = "input_eq"><br>
+
+    <button id = "btn_show_network">Add node</button>
+
+    <div id = "model_table"></div>
+
+    <button id = "btn_run_simulation">Run simulation</button>
+
+    <div id = "histogramDiv"></div>
+
+  </body>
+</html>
