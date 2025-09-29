@@ -10,5 +10,5 @@ A simple dose-response model to compute the risk of getting ill after ingesting 
 | ------------- | --------------------- |
 | `risk`        | `1 - exp(-r * D)`     |
 | `r`           | `unif(0.0001, 0.001)` |
-| `D`           | `1000`                |
+| `D`           | `norm(1000, 100)`     |
 
