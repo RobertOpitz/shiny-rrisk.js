@@ -1,8 +1,10 @@
 import {get_source_node_names} from "./utils.js";
+import {exp} from "./allowed_functions.js";
+import {unif, norm} from "./distributions.js";
 
-function exp(x) {return Math.exp(x);}
+// function exp(x) {return Math.exp(x);}
 
-function unif(min = 0, max = 1) {return (max - min) * Math.random() + min;}
+//function unif(min = 0, max = 1) {return (max - min) * Math.random() + min;}
 
 export default class riskModelClass {
     constructor () {
