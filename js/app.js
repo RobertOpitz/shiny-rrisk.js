@@ -24,21 +24,20 @@ function update_table_and_graph() {
     network.setData( model.get_vis_network_data() );
 }
 
-function modal_dialog() {
+window.modal_dialog = function() {
     const modal        = document.getElementById("modalAddNewNode");
-    const btn          = document.getElementById("btn_add_new_node");
     const span         = document.getElementsByClassName("close")[0];
     const cancelButton = document.getElementById("cancelButton");
     const acceptButton = document.getElementById("acceptButton");
     const node_name    = document.getElementById("input_node_name");
     const node_expr    = document.getElementById("input_eq");
 
-    // When the user clicks the button, open the modal
-    btn.onclick = function() {
-        node_name.value = "";
-        node_expr.value = "";
-        modal.style.display = "block";
-    }
+    // When the user clicks the button and starts this modal dialog, 
+    // clear the text field for node_name and node_expr, and open the modal
+    node_name.value     = "";
+    node_expr.value     = "";
+    modal.style.display = "block";
+
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
         // remove modal dialog
@@ -58,63 +57,91 @@ function modal_dialog() {
         // remove modal dialog
         modal.style.display = "none";
     }
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
 }
-
-document.getElementById("btn_add_new_node").onclick = function() {
-    modal_dialog();
-};
 //--- END SHOW NETWORK AND CREATE MODEL TABLE ----------------------------------
 
 //--- BEGIN RUN SIMULATION -----------------------------------------------------
-function eval_func () {
-  // run simulation
-  model.run_simulation();
-  // plot Histogram for first end node
-  const trace = {
-    x       : model.get_node_result(model.get_end_nodes()[0]),
-    type    : 'histogram',
-    histnorm: "probability density",
-    nbinsx  : 100,
-    marker  : {
-        color: 'gray', // using color parameter
-    },
-  };
+const select_node_result = document.getElementById('select_node_result');
 
-  Plotly.newPlot(
-    'histogramDiv', 
-    [trace], 
-    {
-        title: 'Basic Histogram with Color' // Gives chart layout a title
+function update_select_node_result(options) {
+    // Clear existing options
+    select_node_result.innerHTML = '---';
+    options.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value       = option;
+        opt.textContent = option;
+        select_node_result.appendChild(opt);
+    });
+}
+
+//var el_selected_node_result = document.getElementById("select_node_result");
+
+// function for btn_run_simulaition
+window.run_simulation = function() {
+    // check model
+    // ...
+    // run simulation
+    model.run_simulation();
+    // check if simulation run was ok
+    // ...
+    // update select option of select_node_result
+    update_select_node_result(model.get_results(true));
+    // Set the selected option to first end node
+    const first_end_node_name = model.get_end_nodes()[0];
+    //el_selected_node_result.value = first_end_node_name;
+    document.getElementById("select_node_result").value = first_end_node_name;
+    // plot Histogram for first end node
+    plot_result(first_end_node_name);
+}
+
+// function for select_node_result
+window.selected_node_result = function() {
+    //const node_name = el_selected_node_result.value;//
+    const node_name = document.getElementById("select_node_result").value;
+    console.log(node_name);
+    if (node_name !== '---') {
+        plot_result(node_name);
     }
-  );
-  //console.log(model.result);
-} 
+}
 
-document.getElementById("btn_run_simulation").onclick = eval_func;
+function plot_result(node_name) {
+    const trace = {
+        x       : model.get_node_result(node_name),
+        type    : 'histogram',
+        histnorm: "probability density",
+        nbinsx  : 100,
+        marker  : {
+            color: 'gray', // using color parameter
+        },
+    };
+
+    Plotly.newPlot(
+        'histogramDiv', 
+        [trace], 
+        {
+            title: 'Histogram for '+node_name // Gives chart layout a title
+        }
+    );
+}
 //--- END RUN SIMULATION -------------------------------------------------------
 
-    function openTab(event, tabName) {
-        // Hide all tabs
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.classList.remove('active-tab');
-        });
+window.openTab = function(event, tabName) {
+    // Hide all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active-tab');
+    });
 
-        // Remove active class from all buttons
-        const buttons = document.querySelectorAll('.tab-button');
-        buttons.forEach(button => {
-            button.classList.remove('active');
-        });
+    // Remove active class from all buttons
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach(button => {
+        button.classList.remove('active');
+    });
 
-        // Show the current tab and add an active class to the button that opened the tab
-        document.getElementById(tabName).classList.add('active-tab');
-        event.currentTarget.classList.add('active');
-    }
+    // Show the current tab and add an active class to the button that opened the tab
+    document.getElementById(tabName).classList.add('active-tab');
+    event.currentTarget.classList.add('active');
+}
+
 
 

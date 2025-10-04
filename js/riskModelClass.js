@@ -2,17 +2,13 @@ import {get_source_node_names} from "./utils.js";
 import {exp} from "./allowed_functions.js";
 import {unif, norm} from "./distributions.js";
 
-// function exp(x) {return Math.exp(x);}
-
-//function unif(min = 0, max = 1) {return (max - min) * Math.random() + min;}
-
 export default class riskModelClass {
     constructor () {
         this.nodes    = new Map();
         this.edges    = new Map();
         this.result   = new Map();
         this._visited = new Map();
-        this.mc_iter  = 10000;
+        this.mc_iter  = 100000;
     }
     add_node (node_name, node_expr) {
         // get source node names
@@ -35,7 +31,7 @@ export default class riskModelClass {
     }
     _build_eval_code (node_expr, source_node_names) {
         const args = source_node_names.toString();
-        // '(function({a,b,c}) { return exp(a+b)/c; })(theList);'
+        // example: '(function({a,b,c}) { return exp(a+b)/c; })(theList);'
         const eval_code = '(function({'+args+'}) { return '+node_expr+'; })(input_args)';
         return eval_code;
     } 
@@ -74,6 +70,21 @@ export default class riskModelClass {
         let edges = new vis.DataSet(edges_array);
 
         return { nodes: nodes, edges: edges }
+    }
+    get_results (node_names_only = false) {
+        let result;
+        if (node_names_only) {
+            result = [];
+            for (let [node_name, node_content] of this.nodes) {
+                result.push(node_name);
+            }
+        } else {
+            result = {};
+            for (let [node_name, node_content] of this.nodes) {
+                result[node_name] = node_content;
+            }
+        }
+        return result;
     }
     get_node_result (node_name) {
         let result;

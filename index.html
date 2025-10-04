@@ -14,16 +14,16 @@
         src = "https://cdn.plot.ly/plotly-2.16.1.min.js"
     ></script>
     <!-- css styles -->
-    <link rel = "stylesheet" href = "style.css">
-    <link rel = "stylesheet" href = "table_style.css">
-    <link rel = "stylesheet" href = "tab_style.css">
-    <link rel = "stylesheet" href = "modal_style.css">
+    <link rel = "stylesheet" href = "css/style.css">
+    <link rel = "stylesheet" href = "css/table_style.css">
+    <link rel = "stylesheet" href = "css/tab_style.css">
+    <link rel = "stylesheet" href = "css/modal_style.css">
 </head>
 <body>
 
     <script src = "js/app.js", type = "module"></script>
 
-    <script>
+    <!-- <script>
         function openTab(event, tabName) {
             // Hide all tabs
             const tabs = document.querySelectorAll('.tab');
@@ -39,7 +39,7 @@
             document.getElementById(tabName).classList.add('active-tab');
             event.currentTarget.classList.add('active');
         }
-    </script>
+    </script> -->
 
     <!--- main tabs -->
     <div>
@@ -63,14 +63,17 @@
 
     <!-- Tab content for "Create model" -->
     <div id="createModel" class="tab active-tab">
-        <button id = "btn_add_new_node">Add node</button>
+        <button id = "btn_add_new_node" onclick = "modal_dialog()">Add node</button>
         <div id = "mynetwork"></div>
         <div id = "model_table"></div>
     </div>
 
     <!-- Tab content for "Run simulation" -->
     <div id="runSimulation" class="tab">
-        <button id = "btn_run_simulation">Run simulation</button>
+        <button id = "btn_run_simulation" onclick = "run_simulation()">Run simulation</button>
+        <select id = "select_node_result" onchange = "selected_node_result()">
+            <option value = "empty">---</option>
+        </select>
         <div id = "histogramDiv"></div>
     </div>
 
