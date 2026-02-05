@@ -29,6 +29,12 @@ export default class riskModelClass {
         // update edge list
         this._update_edges();
     }
+    get_node (i) {
+        let node_names = Array.from( this.nodes.keys() );
+        console.log( this.nodes.get( node_names[i] ) );
+        let node_data  = this.nodes.get( node_names[i] );
+        return { node_name: node_names[i], node_expr: node_data.display_code };
+    }
     _build_eval_code (node_expr, source_node_names) {
         const args = source_node_names.toString();
         // example: '(function({a,b,c}) { return exp(a+b)/c; })(theList);'

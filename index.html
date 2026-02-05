@@ -36,10 +36,15 @@
             <h2>Add new node</h2>
             <label for = "input_node_name">node name</label><br>
             <input id  = "input_node_name" type = "text" name = "input_node_name"><br>
-            <label for = "input_eq">user defined expression</label><br>
+            <select id = "select_node_type">
+                <option value = "user_def_expr">user defined expression</option>
+                <option value = "param_dist">parametric distribution</option>
+            </select><br>
+            <!-- <label for = "input_eq">user defined expression</label><br> -->
+            <div id = "node_type_ui"></div>
             <input id  = "input_eq" type = "text" name = "input_eq"><br>
-            <button id = "cancelButton">Cancel</button>
             <button id = "acceptButton">Accept</button>
+            <button id = "cancelButton">Cancel</button>
         </div>
     </div>
 
@@ -54,7 +59,7 @@
     <div id="runSimulation" class="tab">
         <button id = "btn_run_simulation" onclick = "run_simulation()">Run simulation</button>
         <select id = "select_node_result" onchange = "selected_node_result()">
-            <option value = "empty">---</option>
+            <!-- <option value = "---">---</option> -->
         </select>
         <div id = "histogramDiv"></div>
     </div>
