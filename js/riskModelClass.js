@@ -31,7 +31,6 @@ export default class riskModelClass {
     }
     get_node (i) {
         let node_names = Array.from( this.nodes.keys() );
-        console.log( this.nodes.get( node_names[i] ) );
         let node_data  = this.nodes.get( node_names[i] );
         return { node_name: node_names[i], node_expr: node_data.display_code };
     }
@@ -77,13 +76,10 @@ export default class riskModelClass {
 
         return { nodes: nodes, edges: edges }
     }
-    get_results (node_names_only = false) {
+    /*get_results (node_names_only = false) {
         let result;
         if (node_names_only) {
-            result = [];
-            for (let [node_name, node_content] of this.nodes) {
-                result.push(node_name);
-            }
+            result = Array.from( this.nodes.keys() );
         } else {
             result = {};
             for (let [node_name, node_content] of this.nodes) {
@@ -91,7 +87,7 @@ export default class riskModelClass {
             }
         }
         return result;
-    }
+    }*/
     get_node_result (node_name) {
         let result;
         if (this.result.has(node_name)) {

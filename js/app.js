@@ -93,7 +93,8 @@ window.run_simulation = function() {
     // check if simulation run was ok
     // ...
     // update select option of select_node_result
-    update_select_node_result(model.get_results(true));
+    //update_select_node_result(model.get_results(true));
+    update_select_node_result( Array.from( model.nodes.keys() ) );
     // Set the selected option to first end node
     const first_end_node_name = model.get_end_nodes()[0];
     //el_selected_node_result.value = first_end_node_name;
