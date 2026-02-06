@@ -24,8 +24,8 @@ function update_table_and_graph() {
     // get data frame with model infos
     const df_nodes = model.get_df_nodes();
     // create model table
-    createTable("model_table", df_nodes.header, df_nodes.data, 
-                call_modal_dialog_add_change_node_by_id);
+    createTable( "model_table", df_nodes.header, df_nodes.data, 
+                 call_modal_dialog_add_change_node_by_id );
     // view updated network
     network.setData( model.get_vis_network_data() );
 }
@@ -40,10 +40,20 @@ function modal_dialog_add_change_node (pre_node_name  = "",
     const node_name    = document.getElementById("input_node_name");
     const node_expr    = document.getElementById("input_eq");
 
+    // set the title of the modal
+    if ( change_node ) {
+        document.getElementById("modalTitle").textContent = "Change node";
+        acceptButton.textContent = "Cange node";
+    } else {
+        document.getElementById("modalTitle").textContent = "Add new node";
+        acceptButton.textContent = "Add node";
+    }
+
     // When the user clicks the button and starts this modal dialog, 
     // clear the text field for node_name and node_expr
     node_name.value = pre_node_name;
     node_expr.value = pre_node_value;
+
     // open/show the modal
     modal.style.display = "block";
 
@@ -59,20 +69,22 @@ function modal_dialog_add_change_node (pre_node_name  = "",
     }
     // When the user clicks the Accept button, retrieve the name and show an alert
     acceptButton.onclick = function() {
-        // add new node to model
         let result;
-        if (change_node) {
+        if ( change_node ) {
+            // change existing node
             result = model.change_node(pre_node_name, node_name.value, node_expr.value);
         } else {
+            // add new node to model
             result = model.add_node(node_name.value, node_expr.value);
         }
-        if (result.is_ok) {
-            // apdate table and network
+        if ( result.is_ok ) {
+            // update table and network
             update_table_and_graph();
             // remove modal dialog
             modal.style.display = "none";
         } else {
-          alert(`Error: ${result.error_message}`);
+            // 
+            alert(`Error: ${result.error_message}`);
         }
     }
 }
