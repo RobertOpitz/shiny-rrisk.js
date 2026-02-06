@@ -17,19 +17,22 @@ var network = new vis.Network(
 //--- BEGIN SHOW NETWORK AND CREATE MODEL TABLE --------------------------------
 function call_modal_dialog_add_change_node_by_id(i) {
     let result = model.get_node(i-1);
-    modal_dialog_add_change_node( result.node_name, result.node_expr );
+    modal_dialog_add_change_node( result.node_name, result.node_expr, true );
 }
 
 function update_table_and_graph() {
     // get data frame with model infos
     const df_nodes = model.get_df_nodes();
     // create model table
-    createTable("model_table", df_nodes.header, df_nodes.data, call_modal_dialog_add_change_node_by_id);
+    createTable("model_table", df_nodes.header, df_nodes.data, 
+                call_modal_dialog_add_change_node_by_id);
     // view updated network
     network.setData( model.get_vis_network_data() );
 }
 
-function modal_dialog_add_change_node (pre_node_name = "", pre_node_value = "") {
+function modal_dialog_add_change_node (pre_node_name  = "", 
+                                       pre_node_value = "", 
+                                       change_node    = false) {
     const modal        = document.getElementById("modalAddNewNode");
     const span         = document.getElementsByClassName("close")[0];
     const cancelButton = document.getElementById("cancelButton");
@@ -39,8 +42,8 @@ function modal_dialog_add_change_node (pre_node_name = "", pre_node_value = "") 
 
     // When the user clicks the button and starts this modal dialog, 
     // clear the text field for node_name and node_expr
-    node_name.value     = pre_node_name;//"";
-    node_expr.value     = pre_node_value;//"";
+    node_name.value = pre_node_name;
+    node_expr.value = pre_node_value;
     // open/show the modal
     modal.style.display = "block";
 
@@ -57,11 +60,20 @@ function modal_dialog_add_change_node (pre_node_name = "", pre_node_value = "") 
     // When the user clicks the Accept button, retrieve the name and show an alert
     acceptButton.onclick = function() {
         // add new node to model
-        model.add_node(node_name.value, node_expr.value);
-        // apdate table and network
-        update_table_and_graph();
-        // remove modal dialog
-        modal.style.display = "none";
+        let result;
+        if (change_node) {
+            result = model.change_node(pre_node_name, node_name.value, node_expr.value);
+        } else {
+            result = model.add_node(node_name.value, node_expr.value);
+        }
+        if (result.is_ok) {
+            // apdate table and network
+            update_table_and_graph();
+            // remove modal dialog
+            modal.style.display = "none";
+        } else {
+          alert(`Error: ${result.error_message}`);
+        }
     }
 }
 

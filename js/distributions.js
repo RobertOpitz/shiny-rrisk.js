@@ -8,10 +8,10 @@ export function norm(mu = 0, sd = 1) {
     do {
         r1  = 2.0 * Math.random() - 1.0;
         r2  = 2.0 * Math.random() - 1.0;
-        rsq = r1**2 + r2**2;
+        rsq = r1*r1 + r2*r2;
     } while(rsq === 0.0 || rsq > 1.0);
 
-    rsq = Math.sqrt(-2.0 * Math.log(rsq)/rsq);
+    rsq = Math.sqrt( -2.0 * Math.log(rsq)/rsq );
 
     return sd * r1 * rsq + mu;
 } 

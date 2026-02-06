@@ -11,13 +11,17 @@ export default class riskModelClass {
         this.mc_iter  = 100000;
     }
     add_node (node_name, node_expr) {
+        let success = {is_ok: true, error_message: ""};
+        // check if node with this name already exists
+        if ( this.nodes.has( node_name ) ) {
+            success.is_ok = false;
+            success.error_message = `Node "${node_name}" already exists`;
+            return success;
+        }
         // get source node names
-        const source_node_names = get_source_node_names(node_expr);
+        const source_node_names = get_source_node_names( node_expr );
         // build eval_code
-        const eval_code = this._build_eval_code(
-            node_expr,
-            source_node_names
-        );
+        const eval_code = this._build_eval_code( node_expr, source_node_names );
         // add new node
         this.nodes.set(
             node_name, 
@@ -25,9 +29,23 @@ export default class riskModelClass {
               eval_code: eval_code }
         );
         // add implicit nodes, if necessary
-        this._add_implicit_nodes(source_node_names);
+        this._add_implicit_nodes( source_node_names );
         // update edge list
         this._update_edges();
+        // return if everything is ok
+        return success;
+    }
+    change_node (old_node_name, new_node_name, node_expr) {
+        // remove old node old_node_name
+        this.nodes.delete( old_node_name );
+        // remove implicit nodes connected to node old_node_name
+        for ( const source_node_name of this.edges.get( old_node_name ) ) {
+            if ( this.nodes.get( source_node_name ).eval_code === undefined ) {
+                this.nodes.delete( source_node_name );
+            }
+        }
+        // add new node new_node_name using add_node()
+        return this.add_node( new_node_name, node_expr );
     }
     get_node (i) {
         let node_names = Array.from( this.nodes.keys() );
@@ -41,7 +59,7 @@ export default class riskModelClass {
         return eval_code;
     } 
     _add_implicit_nodes (source_node_names) {
-        for (let this_source_node of source_node_names) {
+        for ( let this_source_node of source_node_names)  {
             if ( !this.nodes.has(this_source_node) ) {
                 this.nodes.set(this_source_node, {display_code: "--"});
             }
