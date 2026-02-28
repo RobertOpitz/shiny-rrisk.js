@@ -36,21 +36,34 @@ export default class riskModelClass {
         return success;
     }
     change_node (old_node_name, new_node_name, node_expr) {
-        // remove old node old_node_name
-        this.nodes.delete( old_node_name );
+        // remove old node
+        this.remove_node( old_node_name );
+        // add new node new_node_name using add_node()
+        return this.add_node( new_node_name, node_expr );
+    }
+    remove_node (node_name) {
+        // remove node node_name
+        this.nodes.delete( node_name );
         // remove implicit nodes connected to node old_node_name
-        for ( const source_node_name of this.edges.get( old_node_name ) ) {
-            if ( this.nodes.get( source_node_name ).eval_code === undefined ) {
+        for ( const source_node_name of this.edges.get( node_name ) ) {
+            if ( this.is_implicit_node( source_node_name ) ) {
                 this.nodes.delete( source_node_name );
             }
         }
-        // add new node new_node_name using add_node()
-        return this.add_node( new_node_name, node_expr );
+        // update edge list
+        this._update_edges();
+
+        return true;
     }
     get_node (i) {
         let node_names = Array.from( this.nodes.keys() );
         let node_data  = this.nodes.get( node_names[i] );
         return { node_name: node_names[i], node_expr: node_data.display_code };
+    }
+    is_implicit_node (node_name) {
+        let is_implicit = false;
+        if ( this.nodes.get(node_name).eval_code === undefined ) is_implicit = true;
+        return is_implicit;
     }
     _build_eval_code (node_expr, source_node_names) {
         const args = source_node_names.toString();
@@ -143,7 +156,7 @@ export default class riskModelClass {
         // remove duplicates
         nodes_in_edge_list = [...new Set(nodes_in_edge_list)];
         // get names of nodes from node list
-        let nodes_in_node_list = Array.from(this.nodes.keys());
+        let nodes_in_node_list = Array.from( this.nodes.keys() );
         // nodes that are in node list, but not in edge list, are end nodes
         const diff = nodes_in_node_list.filter(x => !nodes_in_edge_list.includes(x));
         // return result
@@ -158,7 +171,6 @@ export default class riskModelClass {
             this._visited.set(node_name, false);
             //this.result.set(node_name, {visited: false, result: []})
         }
-
         // evaluate graph, starting at end node
         for (let end_node of this.get_end_nodes()) {
             this._evaluate_model(end_node);

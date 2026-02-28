@@ -35,18 +35,30 @@ function modal_dialog_add_change_node (pre_node_name  = "",
                                        change_node    = false) {
     const modal        = document.getElementById("modalAddNewNode");
     const span         = document.getElementsByClassName("close")[0];
+    const modalTitle   = document.getElementById("modalTitle");
     const cancelButton = document.getElementById("cancelButton");
     const acceptButton = document.getElementById("acceptButton");
+    const deleteButton = document.getElementById("deleteButton");
     const node_name    = document.getElementById("input_node_name");
     const node_expr    = document.getElementById("input_eq");
 
-    // set the title of the modal
+    // set the title of the modal, the name of the acceptButton,
+    // and if the delete button will be shown or not.
+    // If the node is implicit, then show the deleteButton, but disanle it
     if ( change_node ) {
-        document.getElementById("modalTitle").textContent = "Change node";
-        acceptButton.textContent = "Cange node";
+        acceptButton.textContent = "Change node";
+        deleteButton.style.display = "block";
+        if ( model.is_implicit_node( pre_node_name ) ) {
+            modalTitle.textContent = "Change node";
+            deleteButton.disabled = true;
+        } else {
+            modalTitle.textContent = "Change or delete node";
+            deleteButton.disabled = false;
+        };
     } else {
-        document.getElementById("modalTitle").textContent = "Add new node";
-        acceptButton.textContent = "Add node";
+        modalTitle.textContent = "Add new node";
+        acceptButton.textContent = "Add new node";
+        deleteButton.style.display = "none";
     }
 
     // When the user clicks the button and starts this modal dialog, 
@@ -86,6 +98,14 @@ function modal_dialog_add_change_node (pre_node_name  = "",
             // 
             alert(`Error: ${result.error_message}`);
         }
+    }
+
+    // if deleteButton is active then remove this node
+    deleteButton.onclick = function() {
+        console.log("delete button clicked");
+        let result = model.remove_node( pre_node_name );
+        // update table and network
+        update_table_and_graph();
     }
 }
 
