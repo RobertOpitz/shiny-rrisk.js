@@ -14,9 +14,30 @@ var network = new vis.Network(
     { edges: { arrows: "from" } }
 );
 
+network.on(
+    "click", 
+    function (event) {
+        const { nodes } = event; // Extract nodes array from the event
+        if (nodes.length) {
+            console.log(`click ${nodes}`);
+        }
+    }
+);
+
+network.on(
+    "doubleClick", 
+    function (event) {
+        const { nodes } = event; // Extract nodes array from the event
+        if (nodes.length) {
+            let result = model.get_node( undefined, nodes[0] );
+            modal_dialog_add_change_node( result.node_name, result.node_expr, true );
+        }
+    }
+);
+
 //--- BEGIN SHOW NETWORK AND CREATE MODEL TABLE --------------------------------
 function call_modal_dialog_add_change_node_by_id(i) {
-    let result = model.get_node(i-1);
+    let result = model.get_node( i-1, undefined );
     modal_dialog_add_change_node( result.node_name, result.node_expr, true );
 }
 
@@ -102,7 +123,6 @@ function modal_dialog_add_change_node (pre_node_name  = "",
 
     // if deleteButton is active then remove this node
     deleteButton.onclick = function() {
-        console.log("delete button clicked");
         let result = model.remove_node( pre_node_name );
         // update table and network
         update_table_and_graph();

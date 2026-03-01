@@ -64,16 +64,6 @@ export function createTable(container, header_names, table_data, call_modal_dial
             'dblclick', 
             function() {call_modal_dialog(i);}
         );
-        // delete button
-        /* deleteButton.addEventListener(
-            'click', 
-            function (event) {
-            // Find the row containing the button that was clicked
-            const thisRow = event.target.closest('tr');
-            if (thisRow) {
-                thisRow.remove(); // Remove the row from the table
-            }
-        }); */
     }
 
     // Append the table to the container

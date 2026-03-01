@@ -44,7 +44,7 @@ export default class riskModelClass {
     remove_node (node_name) {
         // remove node node_name
         this.nodes.delete( node_name );
-        // remove implicit nodes connected to node old_node_name
+        // remove implicit nodes connected to node node_name
         for ( const source_node_name of this.edges.get( node_name ) ) {
             if ( this.is_implicit_node( source_node_name ) ) {
                 this.nodes.delete( source_node_name );
@@ -55,10 +55,17 @@ export default class riskModelClass {
 
         return true;
     }
-    get_node (i) {
-        let node_names = Array.from( this.nodes.keys() );
-        let node_data  = this.nodes.get( node_names[i] );
-        return { node_name: node_names[i], node_expr: node_data.display_code };
+    get_node (id = undefined, node_name = undefined) {
+        let node = undefined;
+        if (id !== undefined) {
+            let node_names = Array.from( this.nodes.keys() );
+            let node_data  = this.nodes.get( node_names[id] );
+            node = { node_name: node_names[id], node_expr: node_data.display_code };
+        } else if (node_name !== undefined) {
+            let node_data  = this.nodes.get( node_name );
+            node = { node_name: node_name, node_expr: node_data.display_code };         
+        }
+        return node;
     }
     is_implicit_node (node_name) {
         let is_implicit = false;
