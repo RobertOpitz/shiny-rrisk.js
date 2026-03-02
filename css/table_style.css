@@ -11,3 +11,6 @@ td, th {
 tr:nth-child(even) {
     background-color: #ebebeb;
 }
+.highlight  {
+    background-color: lightblue;
+}

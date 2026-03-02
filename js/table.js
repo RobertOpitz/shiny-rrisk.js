@@ -1,5 +1,5 @@
 // script.js
-export function createTable(container, header_names, table_data, call_modal_dialog) 
+export function createTable( container, header_names, table_data ) 
 {
     // Get the table container
     const tableContainer = document.getElementById(container);
@@ -43,29 +43,6 @@ export function createTable(container, header_names, table_data, call_modal_dial
         // Append row to the table
         table.appendChild(row); 
     }
-
-    // add click event for each row of the table
-    const rows = table.getElementsByTagName('tr');
-    for (let i = 1; i < rows.length; i++) {
-        // single click
-        rows[i].addEventListener(
-            'click', 
-            function() {
-                // Reset all rows to the original color (optional)
-                for (let j = 0; j < rows.length; j++) {
-                    rows[j].style.backgroundColor = '';
-                }
-                // Change the background color of the clicked row
-                this.style.backgroundColor = 'lightblue'; // You can choose any color
-            }
-        );
-        //double click
-        rows[i].addEventListener(
-            'dblclick', 
-            function() {call_modal_dialog(i);}
-        );
-    }
-
     // Append the table to the container
     tableContainer.appendChild(table);
 }

@@ -18,9 +18,28 @@ network.on(
     "click", 
     function (event) {
         const { nodes } = event; // Extract nodes array from the event
-        if (nodes.length) {
-            console.log(`click ${nodes}`);
+        
+        let this_node;
+        if (nodes.length) 
+            this_node = nodes[0];
+        else
+            this_node = ""; // no node selected
+
+        // get position of node in table
+        //const i = ...;
+
+        const table = document.getElementById("model_table");
+        const rows  = table.getElementsByTagName("tr");
+
+        // Reset all rows to the original color (optional)
+        for (let j = 0; j < rows.length; j++) {
+            if (rows[j].cells[0].textContent === this_node) {
+                rows[j].style.backgroundColor = 'lightblue';       
+            } else {
+                rows[j].style.backgroundColor = '';
+            }
         }
+        //rows[i].style.backgroundColor = 'lightblue';
     }
 );
 
@@ -36,17 +55,47 @@ network.on(
 );
 
 //--- BEGIN SHOW NETWORK AND CREATE MODEL TABLE --------------------------------
-function call_modal_dialog_add_change_node_by_id(i) {
-    let result = model.get_node( i-1, undefined );
-    modal_dialog_add_change_node( result.node_name, result.node_expr, true );
+function addRowHandlers(table_id) {
+    const table = document.getElementById(table_id);
+    const rows  = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < rows.length; i++) {
+        // single click
+        rows[i].addEventListener(
+            'click', 
+            function() {
+                // Reset all rows to the original color (optional)
+                for (let j = 0; j < rows.length; j++) {
+                    rows[j].style.backgroundColor = '';
+                }
+                // Change the background color of the clicked row
+                rows[i].style.backgroundColor = 'lightblue'; // You can choose any color
+                // higlight selected node in graph
+                let this_node = model.get_node( i-1, undefined );
+                network.selectNodes([this_node.node_name]);
+            }
+        );
+        //double click
+        rows[i].addEventListener(
+            'dblclick', 
+            function() {
+                let this_node = model.get_node( i-1, undefined );
+                modal_dialog_add_change_node( this_node.node_name, 
+                                              this_node.node_expr, 
+                                              true );
+            }
+        );
+    }
 }
 
 function update_table_and_graph() {
     // get data frame with model infos
     const df_nodes = model.get_df_nodes();
     // create model table
-    createTable( "model_table", df_nodes.header, df_nodes.data, 
-                 call_modal_dialog_add_change_node_by_id );
+    createTable( "model_table", df_nodes.header, df_nodes.data);
+
+    addRowHandlers("model_table");
+
     // view updated network
     network.setData( model.get_vis_network_data() );
 }
@@ -126,6 +175,8 @@ function modal_dialog_add_change_node (pre_node_name  = "",
         let result = model.remove_node( pre_node_name );
         // update table and network
         update_table_and_graph();
+        // remove modal dialog
+        modal.style.display = "none";
     }
 }
 
@@ -171,28 +222,78 @@ window.run_simulation = function() {
 window.selected_node_result = function() {
     //const node_name = el_selected_node_result.value;//
     const node_name = document.getElementById("select_node_result").value;
-    console.log(node_name);
     if (node_name !== '---') {
         plot_result(node_name);
     }
 }
 
 function plot_result(node_name) {
-    const trace = {
-        x       : model.get_node_result(node_name),
-        type    : 'histogram',
-        histnorm: "probability density",
-        nbinsx  : 100,
-        marker  : {
-            color: 'gray', // using color parameter
+
+    const result = model.get_node_result(node_name); 
+
+    //---BEGIN: HISTOGRAM------------------------------------------------------
+    const histTrace = {
+        x        : result,
+        type     : 'histogram',
+        histnorm : "probability density",
+        nbinsx   : 200,
+        marker   : {
+            color : 'gray', // using color parameter
         },
     };
 
     Plotly.newPlot(
         'histogramDiv', 
-        [trace], 
+        [histTrace], 
         {title: 'Histogram for '+node_name} // Gives chart layout a title
     );
+    //---END: HISTOGRAM--------------------------------------------------------
+
+    //---BEGIN: ECDF-----------------------------------------------------------
+    const num_iter = result.length;
+    const ecdf_y = new Array(num_iter); // Initialize an empty array
+
+    for (let i = 0; i < num_iter; i++) {
+        ecdf_y[i] = (i / num_iter);
+    }
+
+    const ecdfTrace = {
+        x    : result.toSorted(function(a, b){return a - b}),
+        y    : ecdf_y,
+        type : "line"
+    }
+
+    Plotly.newPlot(
+        'ecdfDiv', 
+        [ecdfTrace], 
+        {title: 'ECDF for '+node_name} // Gives chart layout a title
+    );
+    //---END: ECDF-------------------------------------------------------------
+
+    //---BEGIN: Convergence----------------------------------------------------
+    const convergence_y = new Array(num_iter);
+    const convergence_x = new Array(num_iter);
+
+    let sum = 0;
+    let num_iter_plus_one = num_iter + 1;
+    for (let i = 1; i < num_iter_plus_one; i++) {
+        sum += result[i];
+        convergence_y[i] = sum / i;
+        convergence_x[i] = i;
+    }
+
+    const convTrace = {
+        x    : convergence_x,
+        y    : convergence_y,
+        type : "line"
+    }
+
+    Plotly.newPlot(
+        'convergenceDiv',
+        [convTrace],
+        {title: 'Convergence for '+node_name} // Gives chart layout a title
+    )
+    //---END: Convergence------------------------------------------------------
 }
 //--- END RUN SIMULATION -------------------------------------------------------
 
