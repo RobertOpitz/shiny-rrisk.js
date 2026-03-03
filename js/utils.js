@@ -22,12 +22,12 @@ export function get_source_node_names (node_expr) {
             end   = start;
             is_function = false;
             while (i < string_length) {
-                if ( alphanumeric.test(clean_node_expr.at(i)) ) {
+                if ( alphanumeric.test( clean_node_expr.at(i) ) ) {
                     end = i;
                     i += 1;
                 } else {
                     // check if non-alphanumeric char is open bracket
-                    if ( open_bracket.test(clean_node_expr.at(i)) ) {
+                    if ( open_bracket.test( clean_node_expr.at(i) ) ) {
                         is_function = true;
                     }
                     break;
@@ -37,15 +37,13 @@ export function get_source_node_names (node_expr) {
             if (!is_function) {
                 source_node_names.push(clean_node_expr.slice(start, end+1));
             }
-
         } else {
             i += 1;
         }
     }
-    
     // remove duplicates from source_node_names
     source_node_names = [...new Set(source_node_names)];
-
+    //
     return source_node_names;
 }
 

@@ -13,5 +13,9 @@ export function norm(mu = 0, sd = 1) {
 
     rsq = Math.sqrt( -2.0 * Math.log(rsq)/rsq );
 
-    return sd * r1 * rsq + mu;
-} 
+    return mu + sd * r1 * rsq;
+}
+
+export function lnorm(mu = 0, sd = 1) {
+    return Math.exp( norm(mu, sd) );
+}

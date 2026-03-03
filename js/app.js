@@ -14,6 +14,7 @@ var network = new vis.Network(
     { edges: { arrows: "from" } }
 );
 
+// highlight row of node in node table
 network.on(
     "click", 
     function (event) {
@@ -21,7 +22,7 @@ network.on(
         
         let this_node;
         if (nodes.length) 
-            this_node = nodes[0];
+            this_node = nodes[0]; // nodes is an array, but we only need only the element
         else
             this_node = ""; // no node selected
 
@@ -43,6 +44,7 @@ network.on(
     }
 );
 
+// show change dialog if user double clicks on node
 network.on(
     "doubleClick", 
     function (event) {
@@ -60,7 +62,7 @@ function addRowHandlers(table_id) {
     const rows  = table.getElementsByTagName("tr");
 
     for (let i = 1; i < rows.length; i++) {
-        // single click
+        // single click: highlight row of node in table, and node in graph
         rows[i].addEventListener(
             'click', 
             function() {
@@ -75,7 +77,7 @@ function addRowHandlers(table_id) {
                 network.selectNodes([this_node.node_name]);
             }
         );
-        //double click
+        //double click: show change dialog for selected node
         rows[i].addEventListener(
             'dblclick', 
             function() {
@@ -92,10 +94,9 @@ function update_table_and_graph() {
     // get data frame with model infos
     const df_nodes = model.get_df_nodes();
     // create model table
-    createTable( "model_table", df_nodes.header, df_nodes.data);
-
-    addRowHandlers("model_table");
-
+    createTable( "model_table", df_nodes.header, df_nodes.data );
+    // add row handlers
+    addRowHandlers( "model_table" );
     // view updated network
     network.setData( model.get_vis_network_data() );
 }
@@ -169,7 +170,6 @@ function modal_dialog_add_change_node (pre_node_name  = "",
             alert(`Error: ${result.error_message}`);
         }
     }
-
     // if deleteButton is active then remove this node
     deleteButton.onclick = function() {
         let result = model.remove_node( pre_node_name );
@@ -197,8 +197,6 @@ function update_select_node_result(options) {
     });
 }
 
-//var el_selected_node_result = document.getElementById("select_node_result");
-
 // function for btn_run_simulaition
 window.run_simulation = function() {
     // check model
@@ -208,11 +206,9 @@ window.run_simulation = function() {
     // check if simulation run was ok
     // ...
     // update select option of select_node_result
-    //update_select_node_result(model.get_results(true));
     update_select_node_result( Array.from( model.nodes.keys() ) );
     // Set the selected option to first end node
     const first_end_node_name = model.get_end_nodes()[0];
-    //el_selected_node_result.value = first_end_node_name;
     document.getElementById("select_node_result").value = first_end_node_name;
     // plot Histogram for first end node
     plot_result(first_end_node_name);
@@ -220,7 +216,6 @@ window.run_simulation = function() {
 
 // function for select_node_result
 window.selected_node_result = function() {
-    //const node_name = el_selected_node_result.value;//
     const node_name = document.getElementById("select_node_result").value;
     if (node_name !== '---') {
         plot_result(node_name);
@@ -245,14 +240,14 @@ function plot_result(node_name) {
     Plotly.newPlot(
         'histogramDiv', 
         [histTrace], 
-        {title: 'Histogram for '+node_name} // Gives chart layout a title
+        {title: 'Histogram for ' + node_name} // Gives chart layout a title
     );
     //---END: HISTOGRAM--------------------------------------------------------
 
     //---BEGIN: ECDF-----------------------------------------------------------
     const num_iter = result.length;
     const ecdf_y = new Array(num_iter); // Initialize an empty array
-
+    // create y-entries for ecdf
     for (let i = 0; i < num_iter; i++) {
         ecdf_y[i] = (i / num_iter);
     }
@@ -266,7 +261,7 @@ function plot_result(node_name) {
     Plotly.newPlot(
         'ecdfDiv', 
         [ecdfTrace], 
-        {title: 'ECDF for '+node_name} // Gives chart layout a title
+        {title: 'ECDF for ' + node_name} // Gives chart layout a title
     );
     //---END: ECDF-------------------------------------------------------------
 
@@ -275,7 +270,7 @@ function plot_result(node_name) {
     const convergence_x = new Array(num_iter);
 
     let sum = 0;
-    let num_iter_plus_one = num_iter + 1;
+    const num_iter_plus_one = num_iter + 1;
     for (let i = 1; i < num_iter_plus_one; i++) {
         sum += result[i];
         convergence_y[i] = sum / i;
@@ -291,7 +286,7 @@ function plot_result(node_name) {
     Plotly.newPlot(
         'convergenceDiv',
         [convTrace],
-        {title: 'Convergence for '+node_name} // Gives chart layout a title
+        {title: 'Convergence for ' + node_name} // Gives chart layout a title
     )
     //---END: Convergence------------------------------------------------------
 }

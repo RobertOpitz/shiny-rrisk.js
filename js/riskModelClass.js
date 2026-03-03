@@ -1,6 +1,6 @@
 import {get_source_node_names} from "./utils.js";
 import {exp} from "./allowed_functions.js";
-import {unif, norm} from "./distributions.js";
+import {unif, norm, lnorm} from "./distributions.js";
 
 export default class riskModelClass {
     constructor () {
@@ -52,7 +52,7 @@ export default class riskModelClass {
         }
         // update edge list
         this._update_edges();
-
+        //
         return true;
     }
     get_node (id = undefined, node_name = undefined) {
@@ -143,8 +143,8 @@ export default class riskModelClass {
         }
         // build df_nodes
         const df_nodes = {
-            header: ["node name", "node expr"],
-            data: data
+            header : ["node name", "node expr"],
+            data   : data
         };
         // return df_nodes
         return df_nodes;
@@ -211,7 +211,7 @@ export default class riskModelClass {
                 // create input_args dict which is the input for the function in eval_code
                 input_args = { ...source_result_scalar, ...tmp};
                 //
-                result[i] = eval(this.nodes.get(target_node).eval_code);
+                result[i] = eval( this.nodes.get(target_node).eval_code );
             }
             // add result to result of this node
             this.result.set(target_node, result);
